@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, FormEvent, ChangeEvent, useEffect, useRef } from "react";
+import { useState, FormEvent, ChangeEvent, useRef } from "react";
+import axios from "axios";
+import {register, login} from "../services/authService"
 
 /* ─── Types ──────────────────────────────────────────────── */
 type Mode = "login" | "register";
 
-interface LoginForm { email: string; password: string; }
+interface LoginForm { username: string; password: string; }
 interface RegisterForm {
   first_name: string; last_name: string;
   username: string; email: string;
   password: string; confirmPassword: string;
 }
-interface LoginErrors  { email?: string; password?: string; general?: string; }
+interface LoginErrors  { username?: string;  password?: string; general?: string; }
 interface RegisterErrors {
   first_name?: string; last_name?: string; username?: string;
   email?: string; password?: string; confirmPassword?: string; general?: string;
@@ -54,7 +56,7 @@ export default function AuthPage() {
   const [slideDir, setSlideDir] = useState<"left" | "right">("right");
 
   /* Login state */
-  const [loginForm, setLoginForm] = useState<LoginForm>({ email: "", password: "" });
+  const [loginForm, setLoginForm] = useState<LoginForm>({ username: "", password: "" });
   const [loginErrors, setLoginErrors] = useState<LoginErrors>({});
   const [loginLoading, setLoginLoading] = useState(false);
   const [showLoginPw, setShowLoginPw] = useState(false);
@@ -82,8 +84,7 @@ export default function AuthPage() {
   /* ── Login handlers ── */
   const validateLogin = (): LoginErrors => {
     const e: LoginErrors = {};
-    if (!loginForm.email) e.email = "กรุณากรอกอีเมล";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginForm.email)) e.email = "รูปแบบอีเมลไม่ถูกต้อง";
+    if (!loginForm.username.trim()) e.username = "กรุณากรอก Operator ID";
     if (!loginForm.password) e.password = "กรุณากรอกรหัสผ่าน";
     else if (loginForm.password.length < 6) e.password = "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
     return e;
@@ -98,9 +99,19 @@ export default function AuthPage() {
     const errs = validateLogin();
     if (Object.keys(errs).length > 0) { setLoginErrors(errs); return; }
     setLoginLoading(true); setLoginErrors({});
-    await new Promise(r => setTimeout(r, 1500));
-    setLoginLoading(false);
-    setLoginErrors({ general: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
+    try {
+      await login({ username: loginForm.username, password: loginForm.password });
+      window.location.href = "/";
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || err.response?.data?.detail || "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+        setLoginErrors({ general: msg });
+      } else {
+        setLoginErrors({ general: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่" });
+      }
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
   /* ── Register handlers ── */
@@ -129,9 +140,26 @@ export default function AuthPage() {
     const errs = validateReg();
     if (Object.keys(errs).length > 0) { setRegErrors(errs); return; }
     setRegLoading(true); setRegErrors({});
-    await new Promise(r => setTimeout(r, 1500));
-    setRegLoading(false);
-    setRegSuccess(true);
+    try {
+      await register({
+        first_name: regForm.first_name,
+        last_name: regForm.last_name,
+        username: regForm.username,
+        email: regForm.email,
+        password: regForm.password,
+      });
+      setRegSuccess(true);
+    } catch (err) {
+      console.log(err)
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || err.response?.data?.detail || "สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่";
+        setRegErrors({ general: msg });
+      } else {
+        setRegErrors({ general: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่" });
+      }
+    } finally {
+      setRegLoading(false);
+    }
   };
 
   /* Password strength */
@@ -611,17 +639,18 @@ export default function AuthPage() {
                     </div>
                   )}
                   <form onSubmit={handleLoginSubmit} noValidate>
-                    {/* Email */}
+                    {/* Operator ID (Username) */}
                     <div className="mb-4">
-                      <label htmlFor="login-email">{d ? "// OPERATOR ID" : "อีเมล"}</label>
+                      <label htmlFor="login-username">{d ? "// OPERATOR ID" : "Operator ID (Username)"}</label>
                       <input
-                        id="login-email" name="email" type="email" autoComplete="email"
-                        placeholder={d ? "operator@fleet.net" : "your@email.com"}
-                        value={loginForm.email} onChange={handleLoginChange}
-                        className={`input-field ${loginErrors.email ? "input-error" : ""}`}
+                        id="login-username" name="username" type="text" autoComplete="username"
+                        placeholder={d ? "ghost_operator" : "your_username"}
+                        value={loginForm.username} onChange={handleLoginChange}
+                        className={`input-field ${loginErrors.username ? "input-error" : ""}`}
                       />
-                      {loginErrors.email && <p className="err-text">⚠ {loginErrors.email}</p>}
+                      {loginErrors.username && <p className="err-text">⚠ {loginErrors.username}</p>}
                     </div>
+                    
                     {/* Password */}
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-1">
@@ -800,19 +829,6 @@ export default function AuthPage() {
 
             </div>{/* /form-slide */}
           </div>{/* /form-slide-wrap */}
-
-          {/* ── Divider + Google ── */}
-          <div className="divider">
-            <div className="divider-line"/>
-            <span className="divider-text">{d ? "OR" : "หรือ"}</span>
-            <div className="divider-line"/>
-          </div>
-          <button className="google-btn">
-            <GoogleIcon/>
-            {mode === "login"
-              ? (d ? "CONNECT VIA GOOGLE" : "เข้าสู่ระบบด้วย Google")
-              : (d ? "ENLIST VIA GOOGLE"  : "สมัครด้วย Google")}
-          </button>
 
           {/* ── Footer switch link ── */}
           <p className="footer-text text-center mt-6">
