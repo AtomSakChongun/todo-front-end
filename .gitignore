@@ -1,36 +1,182 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+### C++
+# Object files
+*.o
+*.obj
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Precompiled Headers
+*.gch
+*.pch
 
-# testing
-/coverage
+# Dynamic libraries
+*.so
+*.dylib
+*.dll
 
-# next.js
-/.next/
-/out/
+# Static libraries
+*.a
+*.lib
 
-# production
-/build
+# Executables
+*.exe
+*.out
 
-# misc
-.DS_Store
-*.pem
+# Linker output
+*.ilk
+*.map
+*.exp
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Debug files
+*.dSYM/
+*.idb
+*.pdb
 
-# local env files
-.env*.local
+### Go
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work.sum
+
+# env file
 .env
 
-# vercel
-.vercel
+### Node
+# Dependencies
+node_modules/
 
-# typescript
+# Logs
+*.log
+
+# Runtime data
+*.pid
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Build output
+dist/
+build/Release
+
+# TypeScript cache
 *.tsbuildinfo
-next-env.d.ts
+
+# Framework build output and caches
+.cache
+.parcel-cache
+.next
+out/
+.nuxt
+
+# dotenv environment variable files
+.env
+.env.local
+.env.*.local
+
+# npm cache directory
+.npm
+*.tgz
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+.pnp.*
+
+### Objective-C
+# Xcode user settings
+xcuserdata/
+
+# Xcode build data
+DerivedData/
+
+# Obj-C/Swift specific
+*.hmap
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+### Python
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# dotenv environment variable files
+.env
+
+# Virtual environments
+.venv
+env/
+venv/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# Type checkers
+.mypy_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+# .python-version
+
+### Windows
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
+
+### VS Code
+# VSCode settings (keep shared configuration)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
