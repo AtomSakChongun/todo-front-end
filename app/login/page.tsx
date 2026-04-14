@@ -101,7 +101,7 @@ export default function AuthPage() {
     setLoginLoading(true); setLoginErrors({});
     try {
       await login({ username: loginForm.username, password: loginForm.password });
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg = err.response?.data?.message || err.response?.data?.detail || "อีเมลหรือรหัสผ่านไม่ถูกต้อง";

@@ -1,4 +1,4 @@
-import api from "./api"
+import {api} from "./api"
 
 export const register = async (payload: any) => {
   try {
@@ -13,7 +13,7 @@ export const register = async (payload: any) => {
 export const login = async (payload: any) => {
   try {
     const res = await api.post("/users/login", payload);
-    const token = res.data?.token ?? res.data?.access_token;
+    const token = res.data?.data?.token ?? res.data?.token ?? res.data?.access_token;
     if (token) localStorage.setItem("token", token);
     return res.data;
   } catch (err) {
