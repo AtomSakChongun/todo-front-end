@@ -7,4 +7,19 @@ const api = axios.create({
         "Content-Type": "application/json"
     }
 })
-export default api
+const apiTokens = axios.create({
+
+    baseURL:"https://b317-2001-fb1-8f-cf9d-4ca8-aa9f-d97-2072.ngrok-free.app", 
+    headers:{
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json"
+    }
+})
+
+apiTokens.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export { api, apiTokens };
